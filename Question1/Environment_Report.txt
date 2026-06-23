@@ -1,0 +1,33 @@
+
+ommand: whoami
+Output: coder
+Observation: This command displays the current logged-in username. 
+The output 'coder' confirms my active user account in this environment.
+
+Command: groups
+Output: coder
+Observation: This command shows all groups the current user belongs to.
+User 'coder' belongs only to the 'coder' group, indicating a 
+restricted single-user lab environment.
+
+Command: echo $SHELL
+Output: /bin/bash
+Observation: This prints the current shell being used. The system 
+is using Bash, which is the standard default shell on Linux.
+
+Command: pwd
+Output: /home/coder/project/learn
+Observation: This prints the current working directory. I am 
+currently inside the learn folder within the project directory.
+
+Command: ls -la
+Output: (list of files shown)
+Observation: This lists all files including hidden ones with 
+permissions and ownership. The directory contains a C source 
+file, compiled binaries, and a problem statement.
+
+Command: curl -I google.com
+Output: HTTP/1.1 301
+Observation: This sends an HTTP request to google.com to verify 
+network connectivity. The 301 response confirms the network 
+is active and reachable.

@@ -1,0 +1,36 @@
+STORAGE HEALTH ASSESSMENT REPORT
+==================================
+
+Command: lsblk
+Output: loop0-loop5, sda(512G), sdb(45G), sdc(30G), sr0
+Observation: lsblk lists all block storage devices. The system has multiple loop devices, three physical disks (sda 512G, sdb 45G, sdc 30G) and a ROM device. sdb1 is mounted at /tmp and sdc1 at /workspaces.
+
+Command: df -h
+Output: overlay 32G 9.7G 21G 33% /, /dev/root 29G 23G 6.2G 79% /vscode
+Observation: df -h shows disk usage in human readable format. The /vscode partition is 79% full which is worth monitoring. The root filesystem is at 33% usage which is healthy.
+
+Command: df -i
+Output: overlay 2097152 inodes 10% used, /dev/root 3870720 inodes 7% used
+Observation: df -i shows inode utilization. All filesystems have low inode usage which means there is no risk of running out of file slots even if disk space is available.
+
+Command: du -sh ~
+Output: 269M /home/codespace
+Observation: du shows the total disk space used by the home directory. 269MB is being used in the home directory which is reasonable for a development environment.
+
+Command: fdisk -l 2>/dev/null | head -30
+Output: No output (permission denied)
+Observation: fdisk requires root privileges to list partition tables. The 2>/dev/null suppresses the permission error. This is expected in a restricted environment.
+
+STORAGE HEALTH OBSERVATIONS:
+1. /dev/root at /vscode is 79% full - this should be monitored closely
+2. All inode utilization is below 10% - healthy
+3. Root filesystem at 33% - healthy
+4. Home directory using 269MB - normal for development use
+5. Multiple loop devices present - typical for containerized environment
+
+RECOMMENDATIONS FOR IMPROVING STORAGE UTILIZATION:`
+1. Clean up /vscode partition as it is at 79% capacity
+2. Remove unused Docker images and containers to free space
+3. Set up automated alerts when any partition exceeds` 85%
+4. Regularly run du -sh on large directories to identify space consumers
+5. Archive or delete old log files to prevent unexp``ected disk full errors

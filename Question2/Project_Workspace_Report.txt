@@ -1,0 +1,32 @@
+Command: mkdir -p ~/project/secure_workspace/docs ~/project/secure_workspace/code ~/project/secure_workspace/reports
+Output: Directory structure created successfully
+Observation: Created a three-tier workspace structure with docs, code and reports subdirectories. The -p flag creates parent directories automatically if they don't exist.
+
+Command: ls -la ~/project/secure_workspace/ (BEFORE chmod)
+Output: drwxr-xr-x for all directories
+Observation: Default permissions allow owner, group and others to read and execute. This is insecure for a project workspace.
+
+Command: chmod 700 ~/project/secure_workspace
+Command: chmod 750 ~/project/secure_workspace/docs
+Command: chmod 750 ~/project/secure_workspace/code
+Command: chmod 750 ~/project/secure_workspace/reports
+Observation: Changed permissions to restrict access. 700 on main folder means only owner has full access. 750 on subfolders means owner has full access, group can read and execute, others have no access.
+
+Command: ls -la ~/project/secure_workspace/ (AFTER chmod)
+Output: drwx------ for main, drwxr-x--- for subfolders
+Observation: Permissions successfully changed. Workspace is now secured against unauthorized access.
+
+Command: whoami
+Output: codespace
+Observation: Current user is codespace. This user owns all created files and directories.
+
+Command: umask
+Output: 0022
+Observation: Default umask is 0022 which means new files get 644 permissions and directories get 755 by default.
+
+Command: stat ~/project/secure_workspace/docs/project_plan.txt
+Output: Access: (0644/-rw-r--r--) Uid: 1000/codespace
+Observation: File ownership confirmed as codespace user and group. Permissions show owner can read/write, others can only read.
+
+EXPLANATION - HOW PERMISSIONS PROTECT PROJECT DATA:
+Linux file permissions use a three-tier model: owner, group, and others. By setting 700 on the workspace root, we ensure only the project owner can enter the directory. The 750 on subdirectories allows group members to read project files without modifying them. This prevents unauthorized users from accessing, modifying, or deleting sensitive project documentation and code.

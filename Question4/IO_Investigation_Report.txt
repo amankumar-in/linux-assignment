@@ -1,0 +1,38 @@
+Command: lsof | head -20
+Output: List of open files including docker-in, sh, sshd processes
+Observation: lsof lists all files currently open by running processes. It shows the process name, PID, user, file descriptor type and the file path. This reveals which files the system is actively using.
+
+Command: ls -la /proc/$$/fd
+Output: fd 0,1,2 pointing to /dev/pts/0, fd 255 to /dev/pts/0, fd 6 to /dev/null
+Observation: Shows file descriptors for the current shell process. fd 0 is stdin, fd 1 is stdout, fd 2 is stderr - all connected to the terminal /dev/pts/0.
+
+Command: ulimit -a
+Output: open files limit is 524288
+Observation: Shows resource limits for the current session. The open files limit of 524288 means this process can have up to 524288 file descriptors open simultaneously.
+
+Command: echo "Testing output redirection" > output.txt
+Output: No terminal output, file created
+Observation: The > operator redirects stdout to a file instead of the terminal. The text was written to output.txt instead of being displayed on screen.
+
+Command: cat output.txt
+Output: Testing output redirection
+Observation: Confirmed the output was successfully written to the file via redirection.
+
+Command: ls /nonexistent 2> error.txt
+Output: No terminal output
+Observation: The 2> operator redirects stderr (error output) to error.txt. The error message was captured in the file instead of showing on screen.
+
+Command: cat error.txt
+Output: ls: cannot access '/nonexistent': No such file or directory
+Observation: Confirmed the error message was captured in error.txt. This demonstrates stderr redirection which is useful for logging errors separately.
+
+Command: ls /nonexistent > all_output.txt 2>&1
+Output: No terminal output
+Observation: 2>&1 redirects stderr to the same destination as stdout. Both outputs are combined into one file.
+
+Command: cat all_output.txt
+Output: ls: cannot access '/nonexistent': No such file or directory
+Observation: Confirmed both stdout and stderr are captured in the same file.
+
+EXPLANATION - HOW LINUX MANAGES FILE I/O:
+Linux treats everything as a file. Every process gets three default file descriptors: 0 (stdin), 1 (stdout), 2 (stderr). The kernel manages all I/O through these descriptors. Redirection operators (>, 2>, 2>&1) tell the shell to reassign these descriptors to files instead of the terminal. The /proc filesystem exposes live file descriptor information for every running process, allowing inspection of I/O activity in real time.

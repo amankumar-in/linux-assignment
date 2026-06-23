@@ -1,0 +1,45 @@
+Command: echo "This is the original file content" > original.txt
+Output: File created successfully
+Observation: Created original.txt with sample content. This is the source file for creating hard and symbolic links.
+
+Command: ln original.txt hardlink.txt
+Output: No output (success)
+Observation: Created a hard link pointing to the same inode as original.txt. Both files now share inode 1086635, meaning they point to the same data on disk.
+
+Command: ln -s original.txt symlink.txt
+Output: No output (success)
+Observation: Created a symbolic link. symlink.txt gets its own inode 1086636 and simply stores the path to original.txt rather than the actual data.
+
+Command: ls -lai original.txt hardlink.txt symlink.txt
+Output: original.txt and hardlink.txt share inode 1086635, symlink.txt has inode 1086636
+Observation: Confirmed that hard link shares the same inode as original file. Symbolic link has a different inode and shows arrow pointing to original.txt.
+
+Command: rm original.txt
+Output: No output (success)
+Observation: Deleted the original file to test behavior of both link types.
+
+Command: cat hardlink.txt
+Output: This is the original file content
+Observation: Hard link still works after original is deleted. Because it shares the same inode, the data remains on disk as long as at least one hard link exists.
+
+Command: cat symlink.txt
+Output: cat: symlink.txt: No such file or directory
+Observation: Symbolic link is broken. It was pointing to original.txt by path, which no longer exists. This demonstrates that symlinks depend on the original file's existence.
+
+Command: stat hardlink.txt
+Output: Inode 1086635, Links: 1, Size: 34
+Observation: Hard link now shows Links: 1 (was 2 before original was deleted). Data is still intact with full metadata accessible.
+
+Command: file symlink.txt
+Output: symlink.txt: broken symbolic link to original.txt
+Observation: Confirmed symlink is broken. The file command identifies it as a broken symbolic link.
+
+COMPARISON - HARD LINK vs SYMBOLIC LINK:
+Hard Link: shares same inode, survives deletion of original, cannot cross filesystems.
+Symbolic Link: has own inode, breaks when original is deleted, can cross filesystems, shows the target path.
+
+CONCLUSIONS:
+1. Hard links are safer for critical data as they survive original file deletion.
+2. Symbolic links are more flexible but fragile - they break if the target moves or is deleted.
+3. Inode numbers reveal the true identity of files on Linux - same inode means same data.
+4. Linux only deletes file data when all hard links to that inode are removed.
